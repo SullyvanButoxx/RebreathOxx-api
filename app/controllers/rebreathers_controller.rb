@@ -1,0 +1,2 @@
+class RebreathersController < ApplicationController
+end
