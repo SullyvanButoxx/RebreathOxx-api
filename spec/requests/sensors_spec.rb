@@ -2,14 +2,16 @@ require 'rails_helper'
 
 RSpec.describe 'Sensors API' do
   # Initialize the test data
+  let(:user) { create(:user) }
   let!(:rebreather) { create(:rebreather) }
   let!(:sensors) { create_list(:sensor, 20, rebreather_id: rebreather.id) }
   let(:rebreather_id) { rebreather.id }
   let(:id) { sensors.first.id }
+  let(:headers) { valid_headers }
 
   # Test suite for GET /rebreathers/:rebreather_id/sensors
   describe 'GET /rebreathers/:rebreather_id/sensors' do
-    before { get "/rebreathers/#{rebreather_id}/sensors" }
+    before { get "/rebreathers/#{rebreather_id}/sensors", params: {}, headers: headers }
 
     context 'when rebreather exists' do
       it 'returns status code 200' do
@@ -36,7 +38,7 @@ RSpec.describe 'Sensors API' do
 
   # Test suite for GET /rebreathers/:rebreather_id/sensors/:id
   describe 'GET /rebreathers/:rebreather_id/sensors/:id' do
-    before { get "/rebreathers/#{rebreather_id}/sensors/#{id}" }
+    before { get "/rebreathers/#{rebreather_id}/sensors/#{id}", params: {}, headers: headers }
 
     context 'when rebreather sensor exists' do
       it 'returns status code 200' do
@@ -63,10 +65,10 @@ RSpec.describe 'Sensors API' do
 
   # Test suite for PUT /rebreathers/:rebreather_id/sensors
   describe 'POST /rebreathers/:rebreather_id/sensors' do
-    let(:valid_attributes) { { position: 2, serial_number: 'fdfsdfdsf6552fdsa', install_date: '2018-02-02' } }
+    let(:valid_attributes) { { position: 2, serial_number: 'fdfsdfdsf6552fdsa', install_date: '2018-02-02' }.to_json }
 
     context 'when request attributes are valid' do
-      before { post "/rebreathers/#{rebreather_id}/sensors", params: valid_attributes }
+      before { post "/rebreathers/#{rebreather_id}/sensors", params: valid_attributes, headers: headers }
 
       it 'returns status code 201' do
         expect(response).to have_http_status(201)
@@ -74,7 +76,7 @@ RSpec.describe 'Sensors API' do
     end
 
     context 'when an invalid request' do
-      before { post "/rebreathers/#{rebreather_id}/sensors", params: {} }
+      before { post "/rebreathers/#{rebreather_id}/sensors", params: {}, headers: headers }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -88,9 +90,9 @@ RSpec.describe 'Sensors API' do
 
   # Test suite for PUT /rebreathers/:rebreather_id/sensors/:id
   describe 'PUT /rebreathers/:rebreather_id/sensors/:id' do
-    let(:valid_attributes) { { serial_number: 'fdfsdfgds555d' } }
+    let(:valid_attributes) { { serial_number: 'fdfsdfgds555d' }.to_json }
 
-    before { put "/rebreathers/#{rebreather_id}/sensors/#{id}", params: valid_attributes }
+    before { put "/rebreathers/#{rebreather_id}/sensors/#{id}", params: valid_attributes, headers: headers }
 
     context 'when sensor exists' do
       it 'returns status code 204' do
@@ -118,7 +120,7 @@ RSpec.describe 'Sensors API' do
 
   # Test suite for DELETE /rebreathers/:id
   describe 'DELETE /rebreathers/:id' do
-    before { delete "/rebreathers/#{rebreather_id}/sensors/#{id}" }
+    before { delete "/rebreathers/#{rebreather_id}/sensors/#{id}", params: {}, headers: headers }
 
     it 'returns status code 204' do
       expect(response).to have_http_status(204)
