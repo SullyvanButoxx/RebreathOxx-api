@@ -2,13 +2,15 @@ require 'rails_helper'
 
 RSpec.describe 'Rebreathers API', type: :request do
   # initialize test data 
+  let(:user) { create(:user) }
   let!(:rebreathers) { create_list(:rebreather, 10) }
   let(:rebreather_id) { rebreathers.first.id }
+  let(:headers) { valid_headers }
 
   # Test suite for GET /rebreathers
   describe 'GET /rebreathers' do
     # make HTTP get request before each example
-    before { get '/rebreathers' }
+    before { get '/rebreathers', params: {}, headers: headers }
 
     it 'returns rebreathers' do
       # Note `json` is a custom helper to parse JSON responses
@@ -23,7 +25,7 @@ RSpec.describe 'Rebreathers API', type: :request do
 
   # Test suite for GET /rebreathers/:id
   describe 'GET /rebreathers/:id' do
-    before { get "/rebreathers/#{rebreather_id}" }
+    before { get "/rebreathers/#{rebreather_id}", params: {}, headers: headers }
 
     context 'when the record exists' do
       it 'returns the rebreathers' do
@@ -52,10 +54,10 @@ RSpec.describe 'Rebreathers API', type: :request do
   # Test suite for POST /rebreathers
   describe 'POST /rebreathers' do
     # valid payload
-    let(:valid_attributes) { { name: 'Revo III standard'} }
+    let(:valid_attributes) { { name: 'Revo III standard'}.to_json }
 
     context 'when the request is valid' do
-      before { post '/rebreathers', params: valid_attributes }
+      before { post '/rebreathers', params: valid_attributes, headers: headers }
 
       it 'creates a rebreather' do
         expect(json['name']).to eq('Revo III standard')
@@ -67,7 +69,7 @@ RSpec.describe 'Rebreathers API', type: :request do
     end
 
     context 'when the request is invalid' do
-      before { post '/rebreathers', params: { name: '' } }
+      before { post '/rebreathers', params: { name: '' }.to_json, headers: headers }
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -82,10 +84,10 @@ RSpec.describe 'Rebreathers API', type: :request do
 
   # Test suite for PUT /rebreathers/:id
   describe 'PUT /rebreathers/:id' do
-    let(:valid_attributes) { { name: 'Revo II standard' } }
+    let(:valid_attributes) { { name: 'Revo II standard' }.to_json }
 
     context 'when the record exists' do
-      before { put "/rebreathers/#{rebreather_id}", params: valid_attributes }
+      before { put "/rebreathers/#{rebreather_id}", params: valid_attributes, headers: headers }
 
       it 'updates the record' do
         expect(response.body).to be_empty
@@ -99,7 +101,7 @@ RSpec.describe 'Rebreathers API', type: :request do
 
   # Test suite for DELETE /rebreathers/:id
   describe 'DELETE /rebreathers/:id' do
-    before { delete "/rebreathers/#{rebreather_id}" }
+    before { delete "/rebreathers/#{rebreather_id}", params: {}, headers: headers }
 
     it 'returns status code 204' do
       expect(response).to have_http_status(204)
